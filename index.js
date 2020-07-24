@@ -12,24 +12,15 @@ const app = express();
 // Configurar CORS
 app.use(cors());
 
+// Lectura y parseo del body
+app.use(express.json());
 
 // Base de datos
 ConoectionDB();
 
-
-// console.log(process.env);
-
-
-// mean_user
-// 0rYEQQkF75DxuLbH
-
 // Routes
-app.get('/', (req, res) => {
-    res.json({
-        ok: true,
-        mensaje: 'Hello World'
-    });
-});
+app.use('/api/user', require('./routes/users'));
+app.use('/api/login', require('./routes/auth'));
 
 
 app.listen(process.env.PORT, () => {
