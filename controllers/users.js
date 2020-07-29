@@ -10,12 +10,18 @@ const { generarJWT } = require('../helpers/jwt');
 // ================================
 const getUsers = async(req, res) => {
 
-    // Obteniendo todos los usuarios de la BBDD
-    const users = await User.find({}, 'name email role google');
+    const desde = Number(req.query.desde) || 0;
+    // console.log(desde);
+
+    const [users, total] = await Promise.all([
+        User.find({}, 'name email role google img').skip(desde).limit(5),
+        User.countDocuments(),
+    ]);
 
     // Respuesta
     res.json({
         ok: true,
+        'N° Registros': total,
         users
     });
 };
@@ -169,4 +175,4 @@ module.exports = {
     createUsers,
     updateUser,
     deleteUser,
-}
+};
