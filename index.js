@@ -18,6 +18,9 @@ app.use(express.json());
 // Base de datos
 ConoectionDB();
 
+// Directorio Público
+app.use(express.static('public'));
+
 // Routes
 app.use('/api/user', require('./routes/users'));
 app.use('/api/hospitals', require('./routes/hospitals'));
