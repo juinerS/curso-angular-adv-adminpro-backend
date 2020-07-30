@@ -6,8 +6,8 @@ const Medico = require('../models/medico');
 const getMedicos = async(req, res = response) => {
 
     const medicos = await Medico.find()
-        .populate('user', 'nombre img')
-        .populate('hospital', 'nombre img');
+        .populate('user', 'name img')
+        .populate('hospital', 'name img');
 
     res.json({
         ok: true,
@@ -45,21 +45,74 @@ const createMedicos = async(req, res = response) => {
 
 };
 
-const updateMedicos = (req, res = response) => {
+const updateMedicos = async(req, res = response) => {
 
-    res.json({
-        ok: true,
-        msj: 'Todo esta bien en médicos: Actualizar'
-    });
+    const medicoID = req.params.id;
+    const uid = req.uid;
+
+    try {
+
+        const medicoDB = await Medico.findById(medicoID);
+
+        if (!medicoDB) {
+            return res.status(404).json({
+                ok: true,
+                msj: 'No se encontro ningun Médico'
+            });
+        }
+
+        // hospitalDB.name = req.body.name;
+        const cambiosMedico = {
+            ...req.body,
+            user: uid
+        };
+
+        const medicoActualizado = await Medico.findByIdAndUpdate(medicoID, cambiosMedico, { new: true });
+
+        res.json({
+            ok: true,
+            medico: medicoActualizado
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msj: 'Algo salio mal. Por favor hable con el administrador'
+        });
+    }
 
 };
 
-const deleteMedicos = (req, res = response) => {
+const deleteMedicos = async(req, res = response) => {
 
-    res.json({
-        ok: true,
-        msj: 'Todo esta bien en médicos: Eliminar'
-    });
+    const medicoID = req.params.id;
+
+    try {
+
+        const medicoDB = await Medico.findById(medicoID);
+
+        if (!medicoDB) {
+            return res.status(404).json({
+                ok: true,
+                msj: 'No se encontro ningun Médico'
+            });
+        }
+
+        await Medico.findOneAndDelete(medicoID);
+
+        res.json({
+            ok: true,
+            msg: 'El Médico ha sido eliminado'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msj: 'Algo salio mal. Por favor hable con el administrador'
+        });
+    }
 
 };
 

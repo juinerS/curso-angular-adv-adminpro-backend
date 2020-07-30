@@ -24,9 +24,15 @@ router.post('/', [
     createHospitals
 );
 
-router.put('/:id', [], updateHospitals);
+router.put('/:id', [
+        validarJWT,
+        check('name', 'El nombre del hospital es necesario').not().isEmpty(),
+        validarCampos
+    ],
+    updateHospitals
+);
 
-router.delete('/:id', deleteHospitals);
+router.delete('/:id', validarJWT, deleteHospitals);
 
 
 module.exports = router;

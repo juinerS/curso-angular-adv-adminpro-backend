@@ -47,21 +47,74 @@ const createHospitals = async(req, res = response) => {
 
 };
 
-const updateHospitals = (req, res = response) => {
+const updateHospitals = async(req, res = response) => {
 
-    res.json({
-        ok: true,
-        msj: 'Todo esta bien en hospitales: Actualizar'
-    });
+    const hospitalID = req.params.id;
+    const uid = req.uid;
+
+    try {
+
+        const hospitalDB = await Hospital.findById(hospitalID);
+
+        if (!hospitalDB) {
+            return res.status(404).json({
+                ok: true,
+                msj: 'No se encontro ningun Hospital'
+            });
+        }
+
+        // hospitalDB.name = req.body.name;
+        const cambiosHospital = {
+            ...req.body,
+            user: uid
+        };
+
+        const hospitalActualizado = await Hospital.findByIdAndUpdate(hospitalID, cambiosHospital, { new: true });
+
+        res.json({
+            ok: true,
+            hospitalActualizado
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msj: 'Algo salio mal. Por favor hable con el administrador'
+        });
+    }
 
 };
 
-const deleteHospitals = (req, res = response) => {
+const deleteHospitals = async(req, res = response) => {
 
-    res.json({
-        ok: true,
-        msj: 'Todo esta bien en hospitales: Eliminar'
-    });
+    const hospitalID = req.params.id;
+
+    try {
+
+        const hospitalDB = await Hospital.findById(hospitalID);
+
+        if (!hospitalDB) {
+            return res.status(404).json({
+                ok: true,
+                msj: 'No se encontro ningun Hospital'
+            });
+        }
+
+        await Hospital.findOneAndDelete(hospitalID);
+
+        res.json({
+            ok: true,
+            msg: 'El hospital ha sido eliminado'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msj: 'Algo salio mal. Por favor hable con el administrador'
+        });
+    }
 
 };
 
